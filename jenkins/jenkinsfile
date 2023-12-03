@@ -1,0 +1,81 @@
+pipeline {
+    agent any // Use any available agent
+    stages {
+//        stage('clone repo') {
+//          steps {
+//              withCredentials(usernamePassword(credentialsId :jenkins-user-github ,passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME' )){
+//              sh("""
+//              git config --global credential.username {GIT_USERNAME}
+//              git config --global credential.helper "!echo password={GIT_PASSWORD}; echo"
+//              git clone https://github.com/sample.git
+//              """)
+//          }
+//         }
+//         }
+        stage('Clone GitHub Repo') {
+            steps {
+                git branch: 'main', url: 'https://github.com/uptownaravi/devops_course.git'
+            }
+        }
+        stage('Test') { // python unit test the code
+            steps {
+                echo 'pytest' // Print a message
+                sh "cd devops_course && pytest"
+                //sh 'pytest' // Run a shell command
+            }
+        }
+        stage('Build') { // build stage
+            steps {
+                echo 'Building the github stars project...' 
+                sh 'python setup.py sdist' 
+            }
+        }
+        stage('Sonar Scan') { // sonar scan
+            steps {
+                echo 'Deploying the project...' // Print a message
+                //sh '' // Run a shell command
+            }
+        }
+        stage('Sonar Qube report') { // The fourth stage
+            steps {
+                echo 'Generating the report...' // Print a message
+            }
+        }
+        stage('Hado Lint Dockerfile') { // The fourth stage
+            steps {
+                echo 'Generating the report...' // Print a message
+            }
+        }
+        stage('Docker Build') { // The fourth stage
+            steps {
+                echo 'Generating the report...' // Print a message
+            }
+        }
+        stage('docker push to ecr') { // The fourth stage
+            steps {
+                echo 'Generating the report...' // Print a message
+            }
+        }
+        stage('create helm chart and package') { // The fourth stage
+            steps {
+                echo 'Generating the report...' // Print a message
+            }
+        }
+        stage('deploy to k8s') { // The fourth stage
+            steps {
+                echo 'Generating the report...' // Print a message
+            }
+        }
+    }
+    post {
+        // Clean after build
+        always {
+            cleanWs(cleanWhenNotBuilt: false,
+                    deleteDirs: true,
+                    disableDeferredWipeout: true,
+                    notFailBuild: true,
+                    patterns: [[pattern: '.gitignore', type: 'INCLUDE'],
+                               [pattern: '.propsfile', type: 'EXCLUDE']])
+        }
+    }
+}

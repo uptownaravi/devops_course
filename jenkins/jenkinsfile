@@ -19,14 +19,16 @@ pipeline {
         }
         stage('Test') { // python unit test the code
             steps {
-                echo 'pytest' // Print a message
-                sh "cd devops_course && pytest"
+                echo 'pylint' // Print a message
+                sh "pip3 install pylint"
+                sh "cd sampleApp/fastapi && python -m pylint stars.py"
                 //sh 'pytest' // Run a shell command
             }
         }
         stage('Build') { // build stage
             steps {
                 echo 'Building the github stars project...' 
+                sh "cd sampleApp/fastapi"
                 sh 'python setup.py sdist' 
             }
         }

@@ -6,7 +6,7 @@ RUN apt-get update && apt-get install -y software-properties-common && add-apt-r
 RUN python3 --version
 
 RUN mkdir /home/fastapi
-COPY star.py /home/fastapi
+COPY stars.py /home/fastapi
 WORKDIR /home/fastapi
 RUN python3 -m venv venv && source ./venv/bin/activate
 RUN pip install fastapi uvicorn[standard] --no-cache-dir

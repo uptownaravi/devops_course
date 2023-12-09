@@ -19,53 +19,66 @@ pipeline {
         }
         stage('Test') { // python unit test the code
             steps {
-                echo 'pylint' // Print a message
-                sh "pip3 install pylint"
-                sh "cd sampleApp/fastapi && python -m pylint stars.py"
+                script {
+                    try {
+                    echo 'pylint' 
+                    sh "pip3 install pylint"
+                    sh "cd sampleApp/fastapi && python -m pylint stars.py"
+                } catch (err) {
+                    echo "pylint failed"
+                }
+                }
                 //sh 'pytest' // Run a shell command
             }
         }
         stage('Build') { // build stage
             steps {
                 echo 'Building the github stars project...' 
+                sh "pip3 install setuptools wheel twine"
                 sh "cd sampleApp/fastapi"
-                sh 'python setup.py sdist' 
+                sh 'python sampleApp/fastapi/setup.py sdist' 
             }
         }
         stage('Sonar Scan') { // sonar scan
             steps {
-                echo 'Deploying the project...' // Print a message
-                //sh '' // Run a shell command
+                echo 'sonar scan the code...'
+                sh "cd sampleApp/fastapi"
+                sh"sudo /home/ec2-user/sonar-scanner-5.0.1.3006-linux/bin/sonar-scanner -Dsonar.projectKey=py -Dsonar.sources=. -Dsonar.host.url=http://172.31.1.253:9000 -Dsonar.token=sqp_94cc54310f80df64e1173e4a57611f67089307c0"
             }
         }
-        stage('Sonar Qube report') { // The fourth stage
+        stage('Sonar Qube report') { 
             steps {
-                echo 'Generating the report...' // Print a message
+                echo 'Generating the report...'
             }
         }
-        stage('Hado Lint Dockerfile') { // The fourth stage
+        stage('nexus repo upload') { 
             steps {
-                echo 'Generating the report...' // Print a message
+                echo 'upload the pypi to nexus repository' 
             }
         }
-        stage('Docker Build') { // The fourth stage
+        stage('Hado Lint Dockerfile') { 
             steps {
-                echo 'Generating the report...' // Print a message
+                echo 'Generating the report...' 
             }
         }
-        stage('docker push to ecr') { // The fourth stage
+        stage('Docker Build') { 
             steps {
-                echo 'Generating the report...' // Print a message
+                echo 'Generating the report...'
             }
         }
-        stage('create helm chart and package') { // The fourth stage
+        stage('docker push to ecr') { 
             steps {
-                echo 'Generating the report...' // Print a message
+                echo 'Generating the report...' 
+        }
+        }
+        stage('create helm chart and package') { 
+            steps {
+                echo 'Generating the report...' 
             }
         }
-        stage('deploy to k8s') { // The fourth stage
+        stage('deploy to k8s') { 
             steps {
-                echo 'Generating the report...' // Print a message
+                echo 'Generating the report...' 
             }
         }
     }

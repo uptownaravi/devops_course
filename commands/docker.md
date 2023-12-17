@@ -1,3 +1,11 @@
+### docker learning links
+
+https://www.youtube.com/watch?v=fqMOX6JJhGo
+https://www.youtube.com/watch?v=3c-iBn73dDE
+
+### docker playground
+https://labs.play-with-docker.com
+
 ### install docker on amazon linux
 
 sudo yum update -y && sudo yum install docker -y && sudo service docker start && sudo systemctl enable docker && sudo usermod -a -G docker ec2-user && newgrp docker && docker info
@@ -12,9 +20,13 @@ docker ps
 
 docker ps -a
 
- docker build --build-arg="port=80" .
+ docker build --build-arg="port=80" . -t imagename:tag
 
  docker login --username <username> --password <token>
+
+docker push imagename:tag
+
+docker run -d -p hostport:containerport imagename:tag
 
 ### install hadolint on linux
 

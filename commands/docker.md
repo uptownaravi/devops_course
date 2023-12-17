@@ -36,7 +36,7 @@ sudo chmod o+x /bin/hadolint
 hadolint Dockerfile
 
 ### install docker scout on linux
-curl -sSfL <https://raw.githubusercontent.com/docker/scout-cli/main/install.sh> | sh -s --
+curl -sSfL https://raw.githubusercontent.com/docker/scout-cli/main/install.sh | sh -s --
 
 docker scout cves image:tag
 docker scout recommendations stars:v1

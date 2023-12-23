@@ -91,7 +91,9 @@ pipeline {
             steps {
                 echo "Lint Dockerfile"
                 sh "cd sampleApp/fastapi"
-                sh "hadolint Dockerfile"
+                sh "ls -alrt"
+                sh "pwd"
+                sh "hadolint sampleApp/fastapi/Dockerfile"
 
             }
         }

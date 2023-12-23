@@ -18,17 +18,18 @@ pipeline {
                     properties([
                         parameters([
                             choice(
-                                choices: ['ONE', 'TWO'], 
-                                name: 'choice_parameter'
+                                choices: ['build', 'deploy', 'cicd'],
+                                description: 'should the deployment be run or both or only build', 
+                                name: 'choice_build_deploy'
                             ),
                             booleanParam(
                                 defaultValue: true, 
-                                description: '', 
-                                name: 'boolean_parameter'
+                                description: 'should the the docker build be run?', 
+                                name: 'docker_build'
                             ),
                             string(
-                                defaultValue: 'scriptcrunch', 
-                                name: 'string_parameter', 
+                                defaultValue: 'dev', 
+                                name: 'deployment_name', 
                                 trim: true
                             )
                         ])

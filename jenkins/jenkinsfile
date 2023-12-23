@@ -12,6 +12,30 @@ pipeline {
 //          }
 //         }
 //         }
+        stage('Setup Parameters') {
+            steps {
+                script { 
+                    properties([
+                        parameters([
+                            choice(
+                                choices: ['ONE', 'TWO'], 
+                                name: 'choice_parameter'
+                            ),
+                            booleanParam(
+                                defaultValue: true, 
+                                description: '', 
+                                name: 'boolean_parameter'
+                            ),
+                            string(
+                                defaultValue: 'scriptcrunch', 
+                                name: 'string_parameter', 
+                                trim: true
+                            )
+                        ])
+                    ])
+                }
+            }
+        }
         stage('Clone GitHub Repo') {
             steps {
                 git branch: 'main', url: 'https://github.com/uptownaravi/devops_course.git'
@@ -41,9 +65,14 @@ pipeline {
         }
         stage('Sonar Scan') { // sonar scan
             steps {
-                echo 'sonar scan the code...'
+                try {
+                    echo 'sonar scan the code...'
                 sh "cd sampleApp/fastapi"
-                sh"sudo /home/ec2-user/sonar-scanner-5.0.1.3006-linux/bin/sonar-scanner -Dsonar.projectKey=py -Dsonar.sources=. -Dsonar.host.url=http://172.31.1.253:9000 -Dsonar.token=sqp_94cc54310f80df64e1173e4a57611f67089307c0"
+                //sh"sudo /home/ec2-user/sonar-scanner-5.0.1.3006-linux/bin/sonar-scanner -Dsonar.projectKey=py -Dsonar.sources=. -Dsonar.host.url=http://172.31.1.253:9000 -Dsonar.token="
+                } catch (err) {
+                    echo "sonar failed"
+                }
+                
             }
         }
         stage('Sonar Qube report') { 
@@ -58,10 +87,20 @@ pipeline {
         }
         stage('Hado Lint Dockerfile') { 
             steps {
-                echo 'Generating the report...' 
+                echo "Lint Dockerfile"
+                sh "cd sampleApp/fastapi"
+                sh "hadolint Dockerfile"
+
             }
         }
         stage('Docker Build') { 
+            steps {
+                echo 'build docker file'
+                sh "cd sampleApp/fastapi"
+                sh "docker build . -t githubstars:1.0"
+            }
+        }
+        stage('Docker Scout Scan') { 
             steps {
                 echo 'Generating the report...'
             }

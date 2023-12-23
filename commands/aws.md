@@ -17,4 +17,7 @@ https://repost.aws/knowledge-center/create-and-activate-aws-account
 * read for more info
   https://newsletter.goodtechthings.com/p/please-fix-the-aws-free-tier-before?ck_subscriber_id=512830314
 
+### learning aws
 
+* https://www.youtube.com/watch?v=3hLmDS179YE
+* https://www.youtube.com/watch?v=SOTamWNgDKc

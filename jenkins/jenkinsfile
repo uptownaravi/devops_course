@@ -36,6 +36,21 @@ pipeline {
                 }
             }
         }
+
+        stage('Setup env') {
+            steps {
+                script { 
+                    script {
+                        pwd
+                        env.version = sh(returnStdout: true, script: '/sampleApp/fastapi && cat version').trim()
+                        echo version
+                        echo ${env.version}
+
+                    }
+                }
+            }
+        }
+
         stage('Clone GitHub Repo') {
             steps {
                 git branch: 'main', url: 'https://github.com/uptownaravi/devops_course.git'
@@ -143,7 +158,7 @@ pipeline {
 
                     sh "docker scout cves githubstars:1.0"
                     sh "docker scout recommendations githubstars:1.0"
-                    
+
                 } catch (err) {
                     echo "docker --config ~./${params.project_name} scout failed"
                 }

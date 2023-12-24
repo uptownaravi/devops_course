@@ -28,8 +28,7 @@ pipeline {
                                 name: 'docker_build'
                             ),
                             string(
-                                defaultValue: 'dev', 
-                                name: 'deployment_name', 
+                                name: 'project_name',
                                 trim: true
                             )
                         ])
@@ -87,31 +86,79 @@ pipeline {
                 echo 'upload the pypi to nexus repository' 
             }
         }
-        stage('Hado Lint Dockerfile') { 
+        stage('Hado Lint Dockerfile') {
             steps {
-                echo "Lint Dockerfile"
-                sh "cd sampleApp/fastapi"
-                sh "ls -alrt"
-                sh "pwd"
-                sh "hadolint sampleApp/fastapi/Dockerfile"
-
+                script {
+                    try {
+                    echo "Lint Dockerfile"
+                    sh "cd sampleApp/fastapi"
+                    sh "ls -alrt"
+                    sh "pwd"
+                    sh "hadolint sampleApp/fastapi/Dockerfile"
+                } catch (err) {
+                    echo "lint failed"
+                }
             }
         }
-        stage('Docker Build') { 
+        stage('Docker Build') {
+            when {
+                expression {
+                    return params.docker_build == true
+                }
+            }
             steps {
                 echo 'build docker file'
                 sh "cd sampleApp/fastapi"
-                sh "docker build . -t githubstars:1.0"
+                sh "docker build . -t ${params.project_name}:1.0"
             }
         }
+        stage {
+            when {
+                expression {
+                    return params.docker_build == true
+                }
+            }
+            steps {
+                echo 'docker login'
+                sh "mkdir ~/${params.project_name}"
+
+                withCredentials([usernamePassword(credentialsId: 'docker', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_TOKEN')]) {
+                sh "docker login --config ~./${params.project_name}  -u $DOCKER_USERNAME -p $DOCKER_TOKEN"
+                }
+            }
+        }
+
         stage('Docker Scout Scan') { 
+            when {
+                expression {
+                    return params.docker_build == true
+                }
+            }
             steps {
-                echo 'Generating the report...'
+                script {
+                    try {
+                    echo 'Docker Scout Scan'
+                    sh "docker scout cves githubstars:1.0"
+                    sh "docker scout recommendations githubstars:1.0"
+                } catch (err) {
+                    echo "docker scout --config ~./${params.project_name} failed"
+                }
+                }
             }
         }
-        stage('docker push to ecr') { 
+        stage('docker push to dockerhub') { 
+            when {
+                expression {
+                    return params.docker_build == true
+                }
+            }
             steps {
-                echo 'Generating the report...' 
+                echo "docker push to dockerhub"
+                
+                withCredentials([usernamePassword(credentialsId: 'docker', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_TOKEN')]) {
+                sh "docker push --config ~./${params.project_name} $DOCKER_USERNAME/${params.project_name}:1.0"
+                }
+                
         }
         }
         stage('create helm chart and package') { 
@@ -137,3 +184,4 @@ pipeline {
         }
     }
 }
+

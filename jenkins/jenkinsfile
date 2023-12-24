@@ -110,8 +110,7 @@ pipeline {
             steps {
                 echo 'build docker file'
                 sh "cd sampleApp/fastapi"
-                sh "whoami"
-                sh "docker build . -t ${params.project_name}:1.0"
+                sh "cd sampleApp/fastapi && docker build . -t ${params.project_name}:1.0"
             }
         }
 

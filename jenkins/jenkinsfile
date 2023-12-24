@@ -46,12 +46,12 @@ pipeline {
         stage('Setup env') {
             steps {
                 script { 
-                        pwd
-                        env
-                        ls -alrt
+                        sh "pwd"
+                        sh "env"
+                        sh "ls -alrt"
                         env.version = sh(returnStdout: true, script: 'cat /sampleApp/fastapi/version').trim()
-                        echo version
-                        echo ${env.version}
+                        sh"echo version"
+                        sh"echo ${env.version}"
                 }
             }
         }

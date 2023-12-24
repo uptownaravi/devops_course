@@ -125,7 +125,7 @@ pipeline {
             steps {
                 echo 'build docker file'
                 sh "mkdir ~/${params.project_name}"
-                sh "cd sampleApp/fastapi && docker --config ~./${params.project_name} build . -t ${params.project_name}:1.0"
+                sh "cd sampleApp/fastapi && docker --config ~./${params.project_name} build . -t harisharavindan/${params.project_name}:1.0"
             }
         }
 

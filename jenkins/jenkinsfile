@@ -48,7 +48,7 @@ pipeline {
                 script { 
                     script {
                         pwd
-                        env.version = sh(returnStdout: true, script: 'cat/sampleApp/fastapi/version').trim()
+                        env.version = sh(returnStdout: true, script: 'cat /sampleApp/fastapi/version').trim()
                         echo version
                         echo ${env.version}
                     }

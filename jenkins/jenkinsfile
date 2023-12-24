@@ -109,8 +109,8 @@ pipeline {
             }
             steps {
                 echo 'build docker file'
-                sh "cd sampleApp/fastapi"
-                sh "cd sampleApp/fastapi && docker build . -t ${params.project_name}:1.0"
+                sh "mkdir ~/${params.project_name}"
+                sh "cd sampleApp/fastapi && docker --config ~./${params.project_name} build . -t ${params.project_name}:1.0"
             }
         }
 
@@ -122,7 +122,6 @@ pipeline {
             }
             steps {
                 echo 'docker login'
-                sh "mkdir ~/${params.project_name}"
 
                 withCredentials([usernamePassword(credentialsId: 'docker', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_TOKEN')]) {
                 sh "docker --config ~./${params.project_name} login -u $DOCKER_USERNAME -p $DOCKER_TOKEN"
@@ -140,8 +139,11 @@ pipeline {
                 script {
                     try {
                     echo 'Docker Scout Scan'
+                    sh "curl -sSfL https://raw.githubusercontent.com/docker/scout-cli/main/install.sh | sh -s --"
+
                     sh "docker scout cves githubstars:1.0"
                     sh "docker scout recommendations githubstars:1.0"
+                    
                 } catch (err) {
                     echo "docker --config ~./${params.project_name} scout failed"
                 }

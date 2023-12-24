@@ -125,7 +125,7 @@ pipeline {
             steps {
                 echo 'build docker file'
                 sh "mkdir ~/${params.project_name}"
-                sh "cd sampleApp/fastapi && docker --config ~./${params.project_name} build . -t harisharavindan/${params.project_name}:1.0"
+                sh "cd sampleApp/fastapi && docker --config ~./${params.project_name} build . -t harisharavindan/${params.project_name}:${env.version}"
             }
         }
 
@@ -156,8 +156,8 @@ pipeline {
                     echo 'Docker Scout Scan'
                     sh "curl -sSfL https://raw.githubusercontent.com/docker/scout-cli/main/install.sh | sh -s --"
 
-                    sh "docker --config ~./${params.project_name} scout cves githubstars:1.0"
-                    sh "docker --config ~./${params.project_name} scout recommendations githubstars:1.0"
+                    sh "docker --config ~./${params.project_name} scout cves githubstars:${env.version}"
+                    sh "docker --config ~./${params.project_name} scout recommendations githubstars:${env.version}"
 
                 } catch (err) {
                     echo "docker scout failed"
@@ -175,7 +175,7 @@ pipeline {
                 echo "docker push to dockerhub"
                 
                 withCredentials([usernamePassword(credentialsId: 'docker', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_TOKEN')]) {
-                sh "docker --config ~./${params.project_name} push $DOCKER_USERNAME/${params.project_name}:1.0"
+                sh "docker --config ~./${params.project_name} push $DOCKER_USERNAME/${params.project_name}:${env.version}"
                 }
                 
         }
@@ -194,6 +194,7 @@ pipeline {
     post {
         // Clean after build
         always {
+            sh "/var/lib/jenkins/githubstars"
             cleanWs(cleanWhenNotBuilt: false,
                     deleteDirs: true,
                     disableDeferredWipeout: true,

@@ -37,6 +37,12 @@ pipeline {
             }
         }
 
+        stage('Clone GitHub Repo') {
+            steps {
+                git branch: 'main', url: 'https://github.com/uptownaravi/devops_course.git'
+            }
+        }
+
         stage('Setup env') {
             steps {
                 script { 
@@ -49,12 +55,7 @@ pipeline {
                 }
             }
         }
-
-        stage('Clone GitHub Repo') {
-            steps {
-                git branch: 'main', url: 'https://github.com/uptownaravi/devops_course.git'
-            }
-        }
+        
         stage('Test') { // python unit test the code
             steps {
                 script {

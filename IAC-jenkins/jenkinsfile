@@ -61,8 +61,8 @@ pipeline {
         stage('Terraform Plan') { // build stage
             steps {
                 echo 'terraform plan' 
-                sh "cd IAC-jenkins/ && terraform init"
-                sh "cd IAC-jenkins/ && terraform plan -out terraformplan"
+                sh "cd terraform/ && terraform init"
+                sh "cd terraform/ && terraform plan -out terraformplan"
             }
         }
         stage('Approve Step') { // sonar scan
@@ -77,7 +77,7 @@ pipeline {
         stage('Terraform Deploy') { 
             steps {
                 echo 'terraform apply' 
-                sh "cd IAC-jenkins/ && terraform apply terraformplan -auto-approve"
+                sh "cd terraform/ && terraform apply terraformplan -auto-approve"
             }
         }
         stage('Smoketest') {

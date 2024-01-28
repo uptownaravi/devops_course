@@ -1,0 +1,98 @@
+pipeline {
+    agent any // Use any available agent
+    stages {
+        stage('Setup Parameters') {
+            steps {
+                script { 
+                    properties([
+                        parameters([
+                            choice(
+                                choices: ['deploy', 'patch'],
+                                description: 'deployment of infrastrucutre or patching', 
+                                name: 'choice_build_patch'
+                            ),
+                            booleanParam(
+                                defaultValue: true, 
+                                description: 'is it a new environment?', 
+                                name: 'new_env'
+                            ),
+                            string(
+                                name: 'project_name',
+                                trim: true
+                            )
+                        ])
+                    ])
+                }
+            }
+        }
+
+        stage('Clone GitHub Repo') {
+            steps {
+                git branch: 'main', url: 'https://github.com/uptownaravi/devops_course.git'
+            }
+        }
+
+        stage('Terraform Lint') { // python unit test the code
+            steps {
+                script {
+                    try {
+                    echo 'tflint' 
+                    sh "cd IAC-jenkins/ && tflint ."
+                } catch (err) {
+                    echo "tflint failed"
+                }
+                }
+            }
+        }
+
+        stage('Terraform Scan') { // python unit test the code
+            steps {
+                script {
+                    try {
+                    echo 'tfscan' 
+                    sh "cd IAC-jenkins/ && tfscan ."
+                } catch (err) {
+                    echo "tfscan failed"
+                }
+                }
+            }
+        }
+
+        stage('Terraform Plan') { // build stage
+            steps {
+                echo 'terraform plan' 
+                sh "cd IAC-jenkins/ && terraform plan -out terraformplan"
+            }
+        }
+        stage('Approve Step') { // sonar scan
+            steps {
+	      		// Create an Approval Button with a timeout of 15minutes.
+	                timeout(time: 15, unit: "MINUTES") {
+	                    input message: 'Verify the plan and approve terraform apply', ok: 'Yes'
+	                }
+        }
+
+        stage('Terraform Deploy') { 
+            steps {
+                echo 'terraform apply' 
+                sh "cd IAC-jenkins/ && terraform apply terraformplan -auto-approve"
+            }
+        }
+        stage('Smoketest') {
+            steps {
+                echo 'verify the deployment' 
+                sh "kubectl get nodes"
+            }
+        }
+    }
+    post {
+        // Clean after build
+        always {
+            cleanWs(cleanWhenNotBuilt: false,
+                    deleteDirs: true,
+                    disableDeferredWipeout: true,
+                    )
+        }
+    }
+}
+

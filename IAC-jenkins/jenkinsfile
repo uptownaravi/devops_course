@@ -37,7 +37,7 @@ pipeline {
                 script {
                     try {
                     echo 'tflint' 
-                    sh "cd IAC-jenkins/ && tflint"
+                    sh "cd terraform/ && tflint"
                 } catch (err) {
                     echo "tflint failed"
                 }
@@ -50,7 +50,7 @@ pipeline {
                 script {
                     try {
                     echo 'tfsec' 
-                    sh "cd IAC-jenkins/ && tfsec ."
+                    sh "cd terraform/ && tfsec ."
                 } catch (err) {
                     echo "tfsec failed"
                 }

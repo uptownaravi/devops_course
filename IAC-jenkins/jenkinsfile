@@ -71,6 +71,7 @@ pipeline {
 	                    input message: 'Verify the plan and approve terraform apply', ok: 'Yes'
 	                }
         }
+        }
 
         stage('Terraform Deploy') { 
             steps {

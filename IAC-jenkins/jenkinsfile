@@ -37,7 +37,7 @@ pipeline {
                 script {
                     try {
                     echo 'tflint' 
-                    sh "cd IAC-jenkins/ && tflint ."
+                    sh "cd IAC-jenkins/ && tflint "
                 } catch (err) {
                     echo "tflint failed"
                 }
@@ -49,10 +49,10 @@ pipeline {
             steps {
                 script {
                     try {
-                    echo 'tfscan' 
-                    sh "cd IAC-jenkins/ && tfscan ."
+                    echo 'tfsec' 
+                    sh "cd IAC-jenkins/ && tfsec ."
                 } catch (err) {
-                    echo "tfscan failed"
+                    echo "tfsec failed"
                 }
                 }
             }

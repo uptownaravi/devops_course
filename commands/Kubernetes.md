@@ -1,12 +1,27 @@
 ### kubectl commands
 
+get name sapces
+kubectl get ns 
 
+list pods
+kubectl get pods
+
+describe pod
+kubectl describe pod <pod name>
+
+list deploy
+kubectl get deploy
 
 ### helm
 
+list helm releases
+helm ls
 
-### helm commands
+dry run install/upgrade helm release with chart path as current folder
+helm upgrade -i <release name> . --dry-run -n <namespace name>
 
+install/upgrade helm release with chart path as current folder
+helm upgrade -i <release name> . -n <namespace name>
 
 ### k8s autoscaling 
 
@@ -30,3 +45,4 @@ https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/
 install stress to validate scaling
 https://shreedhar1998.hashnode.dev/stress-command-utilization-in-linux-and-targeting-kubernetes-pods
 https://lindevs.com/install-stress-command-on-ubuntu
+

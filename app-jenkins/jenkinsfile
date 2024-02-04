@@ -182,12 +182,35 @@ pipeline {
         }
         stage('create helm chart and package') { 
             steps {
-                echo 'Generating the report...' 
+                echo 'helm lint and package the chart'
+                sh "cd helmChart && helm lint ."
+                sh "helm pacakge ."
             }
         }
-        stage('deploy to k8s') { 
+        stage('dry run deploy to k8s') {
             steps {
-                echo 'Generating the report...' 
+                echo 'run dry run for helm'
+                sh "cd helmChart && helm upgrade ${params.project_name} -i . --dry-run"
+            }
+        }
+        stage('validate dry run deploy to k8s') {
+            steps {
+	      		// Create an Approval Button with a timeout of 15minutes.
+	                timeout(time: 15, unit: "MINUTES") {
+	                    input message: 'Verify the helm dry run and approve helm install/upgrade', ok: 'Yes'
+	                }
+        }
+        }
+         stage('deploy to k8s') {
+            steps {
+                echo 'helm upgrade' 
+            }
+        }
+        stage('test the deployment') {
+            steps {
+                echo 'test the helm deployment'
+                sh "helm ls | grep ${params.project_name}"
+                sh "helm test ${params.project_name}"
             }
         }
     }

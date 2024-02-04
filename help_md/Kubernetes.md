@@ -1,4 +1,5 @@
 ### kubectl commands
+https://kubernetes.io/docs/reference/kubectl/quick-reference/
 
 get name sapces
 kubectl get ns 

@@ -74,3 +74,7 @@ ENV app=githubstars
 EXPOSE ${port}
 CMD ["uvicorn", "stars:app", "--host", "0.0.0.0", "--port", ${port}]
 ```
+
+
+### docker tutorials
+https://www.youtube.com/watch?v=pg19Z8LL06w
